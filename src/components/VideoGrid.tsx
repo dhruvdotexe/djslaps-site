@@ -1,40 +1,56 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { CATEGORIES, VIDEOS, type GameCategory } from "@/lib/data";
+import type { VideoItem, GameCategory } from "@/lib/data";
+import { CATEGORIES } from "@/lib/data";
+import { CATEGORY_ICONS, type CategoryIconName } from "@/components/icons";
 import VideoCard from "@/components/VideoCard";
+import { useMemo, useState } from "react";
 
 export type VideoGridProps = {
-  videos?: typeof VIDEOS;
+  videos?: VideoItem[];
   showFilters?: boolean;
 };
 
 export default function VideoGrid({
-  videos = VIDEOS,
+  videos,
   showFilters = true,
 }: VideoGridProps) {
+  const allVideos = videos ?? [];
   const [active, setActive] = useState<GameCategory | "all">("all");
 
   const filtered = useMemo(
     () =>
-      active === "all" ? videos : videos.filter((v) => v.category === active),
-    [active, videos],
+      active === "all"
+        ? allVideos
+        : allVideos.filter((v) => v.category === active),
+    [active, allVideos],
   );
 
   return (
     <div>
       {showFilters && (
         <div className="mb-8 flex flex-wrap gap-2">
-          {CATEGORIES.map((c) => (
-            <button
-              key={c.key}
-              className="chip"
-              data-active={active === c.key}
-              onClick={() => setActive(c.key)}
-            >
-              {c.label}
-            </button>
-          ))}
+          <button
+            className="chip inline-flex items-center gap-2"
+            data-active={active === "all"}
+            onClick={() => setActive("all")}
+          >
+            All
+          </button>
+          {CATEGORIES.filter((c) => c.key !== "all").map((c) => {
+            const Icon = CATEGORY_ICONS[c.key as CategoryIconName];
+            return (
+              <button
+                key={c.key}
+                className="chip inline-flex items-center gap-2"
+                data-active={active === c.key}
+                onClick={() => setActive(c.key)}
+              >
+                <Icon className="h-4 w-4" aria-hidden />
+                {c.label}
+              </button>
+            );
+          })}
         </div>
       )}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

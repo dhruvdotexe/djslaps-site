@@ -15,6 +15,7 @@ const grotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://djslaps-site.vercel.app"),
   title: {
     default: "DJSLAPS — WE PLAY WE WIN OR LOSE WE CRY EITHER WAY",
     template: "%s · DJSLAPS",

@@ -1,11 +1,4 @@
-import { SOCIALS } from "@/lib/data";
-
-const ICONS: Record<string, string> = {
-  youtube: "▶",
-  discord: "💬",
-  instagram: "📷",
-  twitch: "🟣",
-};
+import { SOCIALS_ORDER } from "@/lib/socials";
 
 export default function SiteFooter() {
   return (
@@ -21,14 +14,7 @@ export default function SiteFooter() {
             </p>
           </div>
           <div className="flex flex-wrap justify-center gap-3">
-            {(
-              [
-                ["youtube", SOCIALS.youtube, "YouTube"],
-                ["discord", SOCIALS.discord, "Discord"],
-                ["instagram", SOCIALS.instagram, "Instagram"],
-                ["twitch", SOCIALS.twitch, "Twitch"],
-              ] as const
-            ).map(([key, href, label]) => (
+            {SOCIALS_ORDER.map(({ key, href, label, Icon }) => (
               <a
                 key={key}
                 href={href}
@@ -36,14 +22,14 @@ export default function SiteFooter() {
                 rel="noopener"
                 className="flex items-center gap-2 rounded-full border border-line bg-panel2 px-4 py-2 text-sm text-dim transition-colors hover:border-pink hover:text-text"
               >
-                <span aria-hidden>{ICONS[key]}</span> {label}
+                <Icon className="h-4 w-4" aria-hidden /> {label}
               </a>
             ))}
           </div>
         </div>
         <p className="mt-10 text-center text-xs text-dim/60">
-          © {new Date().getFullYear()} DJSLAPS · djslaps.vercel.app · made with
-          slaps
+          © {new Date().getFullYear()} DJSLAPS · djslaps-site.vercel.app · made
+          with slaps
         </p>
       </div>
     </footer>

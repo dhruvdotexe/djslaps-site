@@ -1,15 +1,41 @@
 import type { Metadata } from "next";
 import PageHeader from "@/components/PageHeader";
 import VideoGrid from "@/components/VideoGrid";
-import { VIDEOS } from "@/lib/data";
+import { Ghost } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "🎃 Horror Corner",
+  title: "Horror Corner",
   description:
     "Phasmophobia, Fears to Fathom, SCP, I Have No Mouth and I Must Scream, Subnautica — the scariest Hinglish streams on YouTube.",
 };
 
-const HORROR = VIDEOS.filter((v) => v.category === "horror");
+const HORROR = [
+  {
+    id: "W3FwHh8Nsx8",
+    title: "I Have No Mouth, and I Must Scream || Hinglish Gameplay || Horror",
+    category: "horror" as const,
+    published: "2026-08-15",
+  },
+  {
+    id: "EkH3DRPYppg",
+    title: "FEARS TO FATHOM!!! FT. @SSSFPS",
+    category: "horror" as const,
+    published: "2026-07-19",
+  },
+  {
+    id: "AXGzdp_clRM",
+    title: "SUBNAUTICA HORROR!!! FT. @SSSFPS AND ISHAN",
+    category: "horror" as const,
+    published: "2026-07-09",
+  },
+  {
+    id: "2zkBFp5wmZA",
+    title:
+      "Two Men trapped in a Haunted Jail !!! || SCP: Containment Breach Multiplayer with @sssfps",
+    category: "horror" as const,
+    published: "2026-04-17",
+  },
+];
 
 const SERIES = [
   { name: "I Have No Mouth, and I Must Scream", status: "Latest" },
@@ -26,7 +52,7 @@ export default function HorrorPage() {
         eyebrow="Game Pages · Horror"
         title={
           <>
-            🎃 Horror <span className="text-gradient">Corner</span>
+            Horror <span className="text-gradient">Corner</span>
           </>
         }
         sub="Lights off, volume up, regret later. The scariest corner of the channel — enter at your own risk."
@@ -55,14 +81,17 @@ export default function HorrorPage() {
 
       {/* jumpscare easter egg */}
       <section className="mx-auto max-w-6xl px-5 pb-16 pt-4">
-        <div className="card p-8 text-center">
-          <p className="font-display text-xl font-bold">
-            👻 Jumpscare easter egg
-          </p>
-          <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-dim">
-            Hover around this page long enough and something might appear.
-            Toggleable in a future update — for now, consider yourself warned.
-          </p>
+        <div className="card flex items-start gap-5 p-8">
+          <Ghost className="mt-1 h-10 w-10 shrink-0 text-purple" aria-hidden />
+          <div>
+            <p className="font-display text-xl font-bold">
+              Jumpscare easter egg
+            </p>
+            <p className="mt-2 max-w-md text-sm leading-relaxed text-dim">
+              Hover around this page long enough and something might appear.
+              Toggleable in a future update — for now, consider yourself warned.
+            </p>
+          </div>
         </div>
       </section>
     </>

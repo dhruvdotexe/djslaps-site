@@ -1,15 +1,40 @@
 import type { Metadata } from "next";
 import PageHeader from "@/components/PageHeader";
 import VideoCard from "@/components/VideoCard";
-import { VIDEOS } from "@/lib/data";
+import { Pickaxe } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "⛏️ Minecraft Series",
+  title: "Minecraft Series",
   description:
     "The SMP saga: Hidden Floor / Secret Base, Goodbye Ishan — episodes with @sssfps and the gang.",
 };
 
-const SAGA = VIDEOS.filter((v) => v.category === "minecraft");
+const SAGA = [
+  {
+    id: "i-W5ULJIThk",
+    title: "HIDDEN FLOOR A.K.A SECRET BASE || Minecraft episode 3 || ft. @sssfps",
+    category: "minecraft" as const,
+    published: "2026-05-30",
+  },
+  {
+    id: "tPgHa1QgJNU",
+    title: "GOODBYE ISHAN || Minecraft episode 2 || ft. @sssfps",
+    category: "minecraft" as const,
+    published: "2026-05-25",
+  },
+  {
+    id: "fXP-iBKKV_w",
+    title: "Its Minecraft time! || Minecraft Episode 1 || ft @sssfps and @storm",
+    category: "minecraft" as const,
+    published: "2026-05-20",
+  },
+  {
+    id: "wMzFNzIMcPU",
+    title: "Minecraft HORROR MOD!!! || The EVIL HUNTER || ft. @SSSFPS",
+    category: "minecraft" as const,
+    published: "2026-06-30",
+  },
+];
 
 const TIMELINE = [
   {
@@ -41,7 +66,7 @@ export default function MinecraftPage() {
         eyebrow="Game Pages · Minecraft"
         title={
           <>
-            ⛏️ The SMP <span className="text-gradient">Saga</span>
+            The SMP <span className="text-gradient">Saga</span>
           </>
         }
         sub="Episode by episode: the Hidden Floor / Secret Base storyline with @sssfps as co-star and Ishan ('storm') until goodbye."
