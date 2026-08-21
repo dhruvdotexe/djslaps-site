@@ -18,7 +18,7 @@ const RANK_HISTORY = [
 const CLIPS = [
   {
     id: "2DsDNbsqOG4",
-    title: "I FOUND A FUNNY BANGLADESHI NEPALI ON VALO 😭😭🙏💯 FT. @SSSFPS",
+    title: "I FOUND A FUNNY BANGLADESHI NEPALI ON VALO FT. @SSSFPS",
     category: "valorant" as const,
     published: "2026-04-14",
   },
@@ -31,7 +31,7 @@ const CLIPS = [
   {
     id: "aJORDr-30jY",
     title:
-      "MY IRON 1 FUNNIEST GAMEPLAY (GONE WRONG ❌❌❌) !!!!!! || Valorant Mumbai Server",
+      "MY IRON 1 FUNNIEST GAMEPLAY (GONE WRONG) !!!!!! || Valorant Mumbai Server",
     category: "valorant" as const,
     published: "2025-01-01",
   },

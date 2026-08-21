@@ -183,7 +183,7 @@ export const VIDEOS: VideoItem[] = [
   // ---- Valorant + older era ----
   {
     id: "2DsDNbsqOG4",
-    title: "I FOUND A FUNNY BANGLADESHI NEPALI ON VALO 😭😭🙏💯 FT. @SSSFPS",
+    title: "I FOUND A FUNNY BANGLADESHI NEPALI ON VALO FT. @SSSFPS",
     category: "valorant",
     published: "2026-04-14",
   },
@@ -207,7 +207,7 @@ export const VIDEOS: VideoItem[] = [
   },
   {
     id: "aJORDr-30jY",
-    title: "MY IRON 1 FUNNIEST GAMEPLAY (GONE WRONG ❌❌❌) !!!!!! || Valorant Mumbai Server",
+    title: "MY IRON 1 FUNNIEST GAMEPLAY (GONE WRONG) !!!!!! || Valorant Mumbai Server",
     category: "valorant",
     published: "2025-01-01",
   },
@@ -233,9 +233,9 @@ export const VIDEOS: VideoItem[] = [
 
 export const CATEGORIES: { key: GameCategory | "all"; label: string }[] = [
   { key: "all", label: "All" },
-  { key: "horror", label: "🎃 Horror" },
-  { key: "minecraft", label: "⛏️ Minecraft" },
-  { key: "valorant", label: "🔫 Valorant" },
-  { key: "board", label: "♟️ Board Chaos" },
-  { key: "other", label: "🛗 Other Chaos" },
+  { key: "horror", label: "Horror" },
+  { key: "minecraft", label: "Minecraft" },
+  { key: "valorant", label: "Valorant" },
+  { key: "board", label: "Board Chaos" },
+  { key: "other", label: "Other Chaos" },
 ];
