@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { Bricolage_Grotesque, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import SiteNav from "@/components/SiteNav";
@@ -29,7 +30,6 @@ export const metadata: Metadata = {
     images: ["/logo.png"],
   },
 };
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -41,6 +41,7 @@ export default function RootLayout({
         <SiteNav />
         <main>{children}</main>
         <SiteFooter />
+        <Analytics />
       </body>
     </html>
   );

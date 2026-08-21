@@ -89,7 +89,7 @@ export default function Home() {
             rel="noopener"
             className="card group block overflow-hidden"
           >
-            <div className="relative aspect-video overflow-hidden">
+            <div className="relative aspect-video overflow-hidden bg-panel2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={`https://i.ytimg.com/vi/${latest.id}/hq720.jpg`}

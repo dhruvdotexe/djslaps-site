@@ -1,7 +1,7 @@
 "use client";
 
 import type { VideoItem, GameCategory } from "@/lib/data";
-import { CATEGORIES } from "@/lib/data";
+import { CATEGORIES, VIDEOS } from "@/lib/data";
 import { CATEGORY_ICONS, type CategoryIconName } from "@/components/icons";
 import VideoCard from "@/components/VideoCard";
 import { useMemo, useState } from "react";
@@ -15,7 +15,7 @@ export default function VideoGrid({
   videos,
   showFilters = true,
 }: VideoGridProps) {
-  const allVideos = videos ?? [];
+  const allVideos = videos ?? VIDEOS;
   const [active, setActive] = useState<GameCategory | "all">("all");
 
   const filtered = useMemo(
