@@ -2,28 +2,54 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { resolveAudioContext } from "@/lib/audio";
 
 export type SlapAvatarProps = {
   size?: number;
   showHint?: boolean;
+  /** When set, slaps POST to the global counter and this total is displayed. */
+  globalMode?: boolean;
 };
 
-export default function SlapAvatar({ size = 380, showHint = true }: SlapAvatarProps) {
+type SlapResponse = {
+  ok: boolean;
+  total?: number;
+  reason?: string;
+};
+
+type WebkitAudioWindow = Window & {
+  webkitAudioContext?: typeof AudioContext;
+};
+
+export default function SlapAvatar({
+  size = 380,
+  showHint = true,
+  globalMode = false,
+}: SlapAvatarProps) {
   const [slaps, setSlaps] = useState(0);
+  const [globalTotal, setGlobalTotal] = useState<number | null>(null);
   const [slapping, setSlapping] = useState(false);
   const [asleep, setAsleep] = useState(false);
-  const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const idleTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const audioCtx = useRef<AudioContext | null>(null);
   const reduceMotion = useReducedMotion();
 
+  // Fetch the global count once in global mode.
+  useEffect(() => {
+    if (!globalMode) return;
+    fetch("/api/slap")
+      .then((r) => r.json())
+      .then((d: { total?: number }) => {
+        if (typeof d.total === "number") setGlobalTotal(d.total);
+      })
+      .catch(() => {});
+  }, [globalMode]);
+
   const playSlap = useCallback(() => {
     try {
-      if (!audioCtx.current) {
-        audioCtx.current = new (window.AudioContext ||
-          (window as unknown as { webkitAudioContext: typeof AudioContext })
-            .webkitAudioContext)();
-      }
-      const ctx = audioCtx.current;
+      const ctx = resolveAudioContext(audioCtx.current);
+      if (!ctx) return;
+      audioCtx.current = ctx;
       const t = ctx.currentTime;
       const buf = ctx.createBuffer(1, ctx.sampleRate * 0.12, ctx.sampleRate);
       const d = buf.getChannelData(0);
@@ -50,24 +76,33 @@ export default function SlapAvatar({ size = 380, showHint = true }: SlapAvatarPr
 
   const slap = useCallback(() => {
     setSlaps((n) => n + 1);
+    if (globalMode) {
+      setGlobalTotal((t) => (t === null ? null : t + 1));
+      fetch("/api/slap", { method: "POST" })
+        .then((r) => r.json())
+        .then((d: SlapResponse) => {
+          if (d.ok && typeof d.total === "number") setGlobalTotal(d.total);
+        })
+        .catch(() => {});
+    }
     setSlapping(true);
     setAsleep(false);
     setTimeout(() => setSlapping(false), 450);
     playSlap();
-  }, [playSlap]);
+  }, [globalMode, playSlap]);
 
   // fall asleep after 20s of no interaction
   useEffect(() => {
     const reset = () => {
       setAsleep(false);
-      if (idleTimer.current) clearTimeout(idleTimer.current);
+      clearTimeout(idleTimer.current);
       idleTimer.current = setTimeout(() => setAsleep(true), 20000);
     };
     reset();
     window.addEventListener("pointerdown", reset);
     return () => {
       window.removeEventListener("pointerdown", reset);
-      if (idleTimer.current) clearTimeout(idleTimer.current);
+      clearTimeout(idleTimer.current);
     };
   }, []);
 
@@ -141,7 +176,9 @@ export default function SlapAvatar({ size = 380, showHint = true }: SlapAvatarPr
         <p className="mt-2 text-center text-xs tracking-wide text-dim">
           {asleep
             ? "zzz... he fell asleep. wake him up."
-            : "← click the wojak. he deserves it."}
+            : globalMode && globalTotal !== null
+              ? `the community has slapped ${globalTotal.toLocaleString("en-IN")} times — add yours`
+              : "← click the wojak. he deserves it."}
         </p>
       )}
     </div>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import PageHeader from "@/components/PageHeader";
 import VideoGrid from "@/components/VideoGrid";
+import { getVideos } from "@/lib/videos";
 
 export const metadata: Metadata = {
   title: "Streams / VODs",
@@ -8,7 +9,10 @@ export const metadata: Metadata = {
     "Every stream and VOD — horror nights, Minecraft sagas, Valorant chaos, board game betrayal. Filter by game.",
 };
 
-export default function VodsPage() {
+export const revalidate = 3600;
+
+export default async function VodsPage() {
+  const videos = await getVideos();
   return (
     <>
       <PageHeader
@@ -21,7 +25,7 @@ export default function VodsPage() {
         sub="Filter by game, click through to watch. New uploads land here automatically via the channel feed."
       />
       <section className="mx-auto max-w-6xl px-5 pb-10">
-        <VideoGrid />
+        <VideoGrid videos={videos} />
       </section>
     </>
   );

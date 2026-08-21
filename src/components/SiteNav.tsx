@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import LiveBadge from "@/components/LiveBadge";
 import {
   Ghost,
   Pickaxe,
   Crosshair,
   Crown,
   Tv,
+  Hand,
 } from "lucide-react";
 
 const LINKS = [
@@ -19,6 +21,7 @@ const LINKS = [
   { href: "/valorant", label: "Valorant", Icon: Crosshair },
   { href: "/board", label: "Board", Icon: Crown },
   { href: "/gang", label: "The Gang" },
+  { href: "/slap", label: "Slap-o-Meter", Icon: Hand },
   { href: "/about", label: "About" },
 ];
 
@@ -57,15 +60,7 @@ export default function SiteNav() {
               {label}
             </Link>
           ))}
-          <a
-            href="https://www.twitch.tv/djslapsx"
-            target="_blank"
-            rel="noopener"
-            className="ml-2 inline-flex items-center gap-2 rounded-full bg-red px-4 py-2 text-sm font-bold text-white transition-transform hover:-translate-y-0.5"
-          >
-            <Tv className="h-4 w-4" aria-hidden />
-            LIVE
-          </a>
+          <LiveBadge className="ml-2" />
         </div>
 
         {/* mobile toggle */}
@@ -98,15 +93,7 @@ export default function SiteNav() {
                 {label}
               </Link>
             ))}
-            <a
-              href="https://www.twitch.tv/djslapsx"
-              target="_blank"
-              rel="noopener"
-              className="mt-1 inline-flex items-center justify-center gap-2 rounded-full bg-red px-4 py-2.5 text-sm font-bold text-white"
-            >
-              <Tv className="h-4 w-4" aria-hidden />
-              Watch on Twitch
-            </a>
+            <LiveBadge className="mt-1 justify-center" />
           </div>
         </div>
       )}

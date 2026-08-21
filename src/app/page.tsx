@@ -1,7 +1,8 @@
 import PageHeader from "@/components/PageHeader";
 import SlapAvatar from "@/components/SlapAvatar";
 import VideoGrid from "@/components/VideoGrid";
-import { CHANNEL, SOCIALS, VIDEOS } from "@/lib/data";
+import { CHANNEL, SOCIALS } from "@/lib/data";
+import { getVideos } from "@/lib/videos";
 const MARQUEE = [
   "WE PLAY WE WIN OR LOSE WE CRY EITHER WAY",
   "SWAGAT NAHI KAROGE HUMARA?",
@@ -12,8 +13,9 @@ const MARQUEE = [
   "VALORANT RAAAAAAAAAA",
 ];
 
-export default function Home() {
-  const latest = VIDEOS[0];
+export default async function Home() {
+  const videos = await getVideos();
+  const latest = videos[0];
 
   return (
     <>
@@ -136,7 +138,7 @@ export default function Home() {
         <h2 className="mb-8 font-display text-3xl font-extrabold md:text-5xl">
           Latest uploads.
         </h2>
-        <VideoGrid videos={VIDEOS.slice(0, 6)} showFilters={false} />
+        <VideoGrid videos={videos.slice(0, 6)} showFilters={false} />
         <div className="mt-10 text-center">
           <a
             href="/vods"
