@@ -19,9 +19,11 @@ const LINKS = [
   { href: "/horror", label: "Horror", Icon: Ghost },
   { href: "/minecraft", label: "Minecraft", Icon: Pickaxe },
   { href: "/valorant", label: "Valorant", Icon: Crosshair },
-  { href: "/board", label: "Board", Icon: Crown },
   { href: "/gang", label: "The Gang" },
   { href: "/slap", label: "Slap-o-Meter", Icon: Hand },
+  { href: "/fanart", label: "Fan Art" },
+  { href: "/dressup", label: "Dress-up" },
+  { href: "/merch", label: "Merch" },
   { href: "/about", label: "About" },
 ];
 

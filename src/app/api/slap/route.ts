@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
 import { createSlapClient } from "@/lib/supabase";
+import { getClientIp, hashIp, isNicknameAllowed } from "@/lib/moderation";
 
 export const dynamic = "force-dynamic";
 
-function getConfig() {
+type Config = {
+  url: string;
+  anonKey: string;
+};
+
+function getConfig(): Config | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anonKey) return null;
@@ -23,12 +29,13 @@ export async function GET() {
     .eq("id", 1)
     .single();
   if (error) {
-    return NextResponse.json({ total: 0, configured: true, error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { total: 0, configured: true, error: error.message },
+      { status: 500 },
+    );
   }
   return NextResponse.json({ total: data.total, configured: true });
 }
-
-const RATE_LIMIT_MS = 1000;
 
 export async function POST(request: Request) {
   const config = getConfig();
@@ -41,7 +48,7 @@ export async function POST(request: Request) {
 
   let nickname: string | null = null;
   try {
-    const body = await request.json();
+    const body = (await request.json()) as { nickname?: unknown };
     if (typeof body?.nickname === "string" && body.nickname.trim()) {
       nickname = body.nickname.trim().slice(0, 24);
     }
@@ -49,37 +56,33 @@ export async function POST(request: Request) {
     /* body optional */
   }
 
-  const supabase = createSlapClient(config);
-
-  // Rate limit: reject if this IP slapped within the last second.
-  const ip =
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    "unknown";
-  const cutoff = new Date(Date.now() - RATE_LIMIT_MS).toISOString();
-  const { data: recent, error: recentErr } = await supabase
-    .from("slaps")
-    .select("id")
-    .gte("created_at", cutoff)
-    .limit(1);
-
-  if (!recentErr && recent && recent.length > 0) {
-    // Note: per-IP limiting needs a column we don't store; this global
-    // throttle still blunts bursts. See README note for RLS-based hardening.
+  if (nickname && !isNicknameAllowed(nickname)) {
     return NextResponse.json(
-      { ok: false, reason: "rate-limited" },
-      { status: 429 },
+      { ok: false, reason: "nickname-rejected" },
+      { status: 400 },
     );
   }
 
-  const { data: inc, error: incErr } = await supabase.rpc("increment_slaps");
-  if (incErr || inc === null) {
+  const ipHash = hashIp(getClientIp(request), config.anonKey);
+
+  const supabase = createSlapClient(config);
+  const { data, error } = await supabase.rpc("record_slap", {
+    p_ip_hash: ipHash,
+    p_nickname: nickname,
+  });
+
+  if (error) {
+    if (error.message.includes("RATE_LIMITED")) {
+      return NextResponse.json(
+        { ok: false, reason: "rate-limited" },
+        { status: 429 },
+      );
+    }
     return NextResponse.json(
       { ok: false, reason: "db-error" },
       { status: 500 },
     );
   }
 
-  await supabase.from("slaps").insert({ nickname });
-
-  return NextResponse.json({ ok: true, total: inc });
+  return NextResponse.json({ ok: true, total: data });
 }

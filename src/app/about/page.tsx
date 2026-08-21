@@ -8,6 +8,7 @@ import {
   AtSign,
   Tv,
 } from "lucide-react";
+import DiscordWidget from "@/components/DiscordWidget";
 
 export const metadata: Metadata = {
   title: "About",
@@ -110,6 +111,11 @@ export default function AboutPage() {
               ))}
             </div>
           </div>
+
+          <DiscordWidget
+            guildId="1367181609765175431"
+            inviteUrl="https://discord.gg/kET895U4a"
+          />
 
           <div className="card p-8">
             <h2 className="font-display text-2xl font-bold">Find me at</h2>
