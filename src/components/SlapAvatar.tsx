@@ -2,39 +2,42 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { resolveAudioContext } from "@/lib/audio";
 
 export type SlapAvatarProps = {
   size?: number;
   showHint?: boolean;
+  /** Which expression to show. */
+  mood?: "default" | "scared" | "smug" | "sleeping";
   /** When set, slaps POST to the global counter and this total is displayed. */
   globalMode?: boolean;
 };
 
-type SlapResponse = {
-  ok: boolean;
-  total?: number;
-  reason?: string;
+type AudioWindow = {
+  AudioContext?: typeof AudioContext;
+  webkitAudioContext?: typeof AudioContext;
 };
 
-type WebkitAudioWindow = Window & {
-  webkitAudioContext?: typeof AudioContext;
+const SRC: Record<NonNullable<SlapAvatarProps["mood"]>, string> = {
+  default: "/mascot/wojak-default.png",
+  scared: "/mascot/wojak-scared.png",
+  smug: "/mascot/wojak-smug.png",
+  sleeping: "/mascot/wojak-sleeping.png",
 };
 
 export default function SlapAvatar({
   size = 380,
   showHint = true,
+  mood = "default",
   globalMode = false,
 }: SlapAvatarProps) {
   const [slaps, setSlaps] = useState(0);
   const [globalTotal, setGlobalTotal] = useState<number | null>(null);
   const [slapping, setSlapping] = useState(false);
-  const [asleep, setAsleep] = useState(false);
-  const idleTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const [asleep, setAsleep] = useState(mood === "sleeping");
+  const idleTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const audioCtx = useRef<AudioContext | null>(null);
   const reduceMotion = useReducedMotion();
 
-  // Fetch the global count once in global mode.
   useEffect(() => {
     if (!globalMode) return;
     fetch("/api/slap")
@@ -47,7 +50,7 @@ export default function SlapAvatar({
 
   const playSlap = useCallback(() => {
     try {
-      const ctx = resolveAudioContext(audioCtx.current);
+      const ctx = resolveCtx(audioCtx.current);
       if (!ctx) return;
       audioCtx.current = ctx;
       const t = ctx.currentTime;
@@ -72,6 +75,12 @@ export default function SlapAvatar({
     } catch {
       /* audio unavailable before first gesture */
     }
+    function resolveCtx(existing: AudioContext | null): AudioContext | null {
+      const win = window as AudioWindow;
+      const Ctx = win.AudioContext ?? win.webkitAudioContext;
+      if (existing) return existing;
+      return Ctx ? new Ctx() : null;
+    }
   }, []);
 
   const slap = useCallback(() => {
@@ -80,7 +89,7 @@ export default function SlapAvatar({
       setGlobalTotal((t) => (t === null ? null : t + 1));
       fetch("/api/slap", { method: "POST" })
         .then((r) => r.json())
-        .then((d: SlapResponse) => {
+        .then((d: { ok?: boolean; total?: number }) => {
           if (d.ok && typeof d.total === "number") setGlobalTotal(d.total);
         })
         .catch(() => {});
@@ -93,6 +102,10 @@ export default function SlapAvatar({
 
   // fall asleep after 20s of no interaction
   useEffect(() => {
+    if (mood === "sleeping") {
+      setAsleep(true);
+      return;
+    }
     const reset = () => {
       setAsleep(false);
       clearTimeout(idleTimer.current);
@@ -104,7 +117,10 @@ export default function SlapAvatar({
       window.removeEventListener("pointerdown", reset);
       clearTimeout(idleTimer.current);
     };
-  }, []);
+  }, [mood]);
+
+  const activeMood: SlapAvatarProps["mood"] =
+    mood === "default" && asleep ? "sleeping" : mood;
 
   return (
     <div className="relative select-none" style={{ width: size }}>
@@ -152,7 +168,8 @@ export default function SlapAvatar({
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/mascot/wojak-default.png"
+          key={activeMood}
+          src={SRC[activeMood ?? "default"]}
           alt="DJSLAPS wojak mascot"
           draggable={false}
           className="w-full drop-shadow-[0_30px_60px_rgba(123,92,255,0.25)]"
