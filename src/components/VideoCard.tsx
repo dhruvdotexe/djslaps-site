@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { VideoItem } from "@/lib/data";
 
 export type VideoCardProps = {
@@ -17,7 +17,17 @@ const THUMB_SOURCES = (id: string) => [
 export default function VideoCard({ video }: VideoCardProps) {
   const [srcIdx, setSrcIdx] = useState(0);
   const [gaveUp, setGaveUp] = useState(false);
+  const imgRef = useRef<HTMLImageElement | null>(null);
   const sources = THUMB_SOURCES(video.id);
+
+  // Catch placeholders that finished decoding before React attached onLoad.
+  useEffect(() => {
+    const img = imgRef.current;
+    if (img && img.complete && img.naturalWidth > 0 && img.naturalWidth <= 120) {
+      if (srcIdx < sources.length - 1) setSrcIdx((i) => i + 1);
+      else setGaveUp(true);
+    }
+  });
 
   return (
     <a
@@ -30,6 +40,7 @@ export default function VideoCard({ video }: VideoCardProps) {
         {!gaveUp && (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
+            ref={imgRef}
             src={sources[srcIdx]}
             alt={video.title}
             loading="lazy"

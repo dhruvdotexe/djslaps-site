@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export type LatestThumbProps = {
   videoId: string;
@@ -18,7 +18,18 @@ const SOURCES = (id: string) => [
 export default function LatestThumb({ videoId, title }: LatestThumbProps) {
   const [srcIdx, setSrcIdx] = useState(0);
   const [gaveUp, setGaveUp] = useState(false);
+  const imgRef = useRef<HTMLImageElement | null>(null);
   const sources = SOURCES(videoId);
+
+  // Re-inspect after mount: if the browser already decoded a placeholder
+  // before React attached onLoad, catch it here.
+  useEffect(() => {
+    const img = imgRef.current;
+    if (img && img.complete && img.naturalWidth > 0 && img.naturalWidth <= 120) {
+      if (srcIdx < sources.length - 1) setSrcIdx((i) => i + 1);
+      else setGaveUp(true);
+    }
+  });
 
   if (gaveUp) {
     return (
@@ -36,6 +47,7 @@ export default function LatestThumb({ videoId, title }: LatestThumbProps) {
   return (
     /* eslint-disable-next-line @next/next/no-img-element */
     <img
+      ref={imgRef}
       src={sources[srcIdx]}
       alt={title}
       onError={() => {
