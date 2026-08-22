@@ -1,6 +1,6 @@
 import PageHeader from "@/components/PageHeader";
 import SlapAvatar from "@/components/SlapAvatar";
-import VideoGrid from "@/components/VideoGrid";
+import LatestThumb from "@/components/LatestThumb";
 import { CHANNEL, SOCIALS } from "@/lib/data";
 import { getVideos } from "@/lib/videos";
 const MARQUEE = [
@@ -92,12 +92,7 @@ export default async function Home() {
             className="card group block overflow-hidden"
           >
             <div className="relative aspect-video overflow-hidden bg-panel2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`https://i.ytimg.com/vi/${latest.id}/hq720.jpg`}
-                alt={latest.title}
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
+              <LatestThumb videoId={latest.id} title={latest.title} />
               <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
                 <span className="flex h-16 w-16 items-center justify-center rounded-full bg-red text-2xl text-white">
                   ▶
