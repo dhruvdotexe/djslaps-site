@@ -1,5 +1,6 @@
 import PageHeader from "@/components/PageHeader";
 import SlapAvatar from "@/components/SlapAvatar";
+import VideoGrid from "@/components/VideoGrid";
 import LatestThumb from "@/components/LatestThumb";
 import { CHANNEL, SOCIALS } from "@/lib/data";
 import { getVideos } from "@/lib/videos";
