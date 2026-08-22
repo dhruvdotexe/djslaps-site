@@ -24,7 +24,7 @@ export default function FanArtAdminPage() {
   const [messageDraft, setMessageDraft] = useState("");
 
   const load = useCallback(async (adminKey: string) => {
-    const res = await fetch("/api/fanart/manage", {
+    const res = await fetch("/api/fanart/moderate", {
       headers: { "x-admin-key": adminKey },
     });
     if (res.status === 401) {
