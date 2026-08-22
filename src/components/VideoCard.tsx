@@ -9,12 +9,14 @@ export type VideoCardProps = {
 
 /** Thumbnail sizes YouTube may serve; some videos lack hq720. */
 const THUMB_SOURCES = (id: string) => [
+  `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`,
   `https://i.ytimg.com/vi/${id}/hq720.jpg`,
   `https://i.ytimg.com/vi/${id}/hqdefault.jpg`,
 ];
 
 export default function VideoCard({ video }: VideoCardProps) {
   const [srcIdx, setSrcIdx] = useState(0);
+  const [gaveUp, setGaveUp] = useState(false);
   const sources = THUMB_SOURCES(video.id);
 
   return (
@@ -25,16 +27,37 @@ export default function VideoCard({ video }: VideoCardProps) {
       className="card group block overflow-hidden"
     >
       <div className="relative aspect-video overflow-hidden bg-panel2">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={sources[srcIdx]}
-          alt={video.title}
-          loading="lazy"
-          onError={() =>
-            setSrcIdx((i) => Math.min(i + 1, sources.length - 1))
-          }
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-        />
+        {!gaveUp && (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={sources[srcIdx]}
+            alt={video.title}
+            loading="lazy"
+            onError={() => {
+              if (srcIdx < sources.length - 1) setSrcIdx((i) => i + 1);
+              else setGaveUp(true);
+            }}
+            onLoad={(e) => {
+              // YouTube returns a 120x90 gray placeholder for missing
+              // thumbnails instead of a 404 — detect and fall through.
+              const img = e.currentTarget;
+              if (img.naturalWidth <= 120 && srcIdx < sources.length - 1) {
+                setSrcIdx((i) => i + 1);
+              }
+            }}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        )}
+        {gaveUp && (
+          <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-purple/20 via-panel to-red/20">
+            <span className="text-3xl" aria-hidden>
+              🎬
+            </span>
+            <span className="px-4 text-center text-xs uppercase tracking-wider text-dim">
+              thumbnail unavailable
+            </span>
+          </div>
+        )}
         <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
           <span className="flex h-14 w-14 items-center justify-center rounded-full bg-red text-xl text-white shadow-[0_10px_30px_-6px_rgba(227,51,64,0.8)]">
             ▶
