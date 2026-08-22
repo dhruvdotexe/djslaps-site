@@ -38,11 +38,15 @@ export default function VideoCard({ video }: VideoCardProps) {
               else setGaveUp(true);
             }}
             onLoad={(e) => {
-              // YouTube returns a 120x90 gray placeholder for missing
-              // thumbnails instead of a 404 — detect and fall through.
+              // YouTube serves a 120x90 gray placeholder (HTTP 404 but
+              // valid JPEG) for missing sizes — advance past it.
               const img = e.currentTarget;
-              if (img.naturalWidth <= 120 && srcIdx < sources.length - 1) {
-                setSrcIdx((i) => i + 1);
+              if (img.naturalWidth <= 120) {
+                if (srcIdx < sources.length - 1) {
+                  setSrcIdx((i) => i + 1);
+                } else {
+                  setGaveUp(true);
+                }
               }
             }}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
