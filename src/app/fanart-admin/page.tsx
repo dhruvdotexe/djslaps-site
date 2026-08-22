@@ -15,6 +15,7 @@ export default function FanArtAdminPage() {
   const [authed, setAuthed] = useState(false);
   const [items, setItems] = useState<PendingItem[]>([]);
   const [busy, setBusy] = useState(false);
+  const [preview, setPreview] = useState<PendingItem | null>(null);
 
   const load = useCallback(
     async (adminKey: string) => {
@@ -107,12 +108,18 @@ export default function FanArtAdminPage() {
               className="card flex flex-col gap-4 p-5 sm:flex-row sm:items-center"
             >
               {item.url && (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={item.url}
-                  alt={`Submission by ${item.artist_name}`}
-                  className="h-28 w-28 shrink-0 rounded-xl object-cover"
-                />
+                <button
+                  onClick={() => setPreview(item)}
+                  aria-label={`Open full image by ${item.artist_name}`}
+                  className="shrink-0 cursor-zoom-in transition-transform hover:scale-105"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={item.url}
+                    alt={`Submission by ${item.artist_name}`}
+                    className="h-28 w-28 rounded-xl object-cover"
+                  />
+                </button>
               )}
               <div className="min-w-0 flex-1">
                 <p className="font-medium">{item.artist_name}</p>
@@ -141,6 +148,58 @@ export default function FanArtAdminPage() {
             </li>
           ))}
         </ul>
+      )}
+
+      {/* full-size preview lightbox */}
+      {preview && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Full image by ${preview.artist_name}`}
+          onClick={() => setPreview(null)}
+          onKeyDown={(e) => e.key === "Escape" && setPreview(null)}
+          tabIndex={-1}
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-4 bg-black/90 p-6"
+        >
+          <p className="font-display text-lg font-bold">
+            {preview.artist_name}
+            {" "}
+            <span className="text-sm font-normal text-dim">
+              · click anywhere or press Esc to close
+            </span>
+          </p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={preview.url ?? ""}
+            alt={`Full submission by ${preview.artist_name}`}
+            onClick={(e) => e.stopPropagation()}
+            className="max-h-[80vh] max-w-full cursor-zoom-out rounded-xl object-contain"
+          />
+          <div className="flex gap-3">
+            <button
+              disabled={busy}
+              onClick={(e) => {
+                e.stopPropagation();
+                moderate(preview.id, "approve");
+                setPreview(null);
+              }}
+              className="inline-flex items-center gap-2 rounded-full bg-green-600/20 px-5 py-2.5 text-sm font-bold text-green-400 transition-transform hover:scale-105"
+            >
+              <Check className="h-4 w-4" /> Approve
+            </button>
+            <button
+              disabled={busy}
+              onClick={(e) => {
+                e.stopPropagation();
+                moderate(preview.id, "reject");
+                setPreview(null);
+              }}
+              className="inline-flex items-center gap-2 rounded-full bg-red/20 px-5 py-2.5 text-sm font-bold text-[#ff8d96] transition-transform hover:scale-105"
+            >
+              <X className="h-4 w-4" /> Reject
+            </button>
+          </div>
+        </div>
       )}
     </main>
   );
