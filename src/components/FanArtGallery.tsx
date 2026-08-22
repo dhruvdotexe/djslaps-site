@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { MessageSquare } from "lucide-react";
 
 export type FanArtGalleryProps = {
   configured: boolean;
@@ -11,6 +12,7 @@ type GalleryItem = {
   artist_name: string;
   url: string;
   created_at: string;
+  dj_message?: string | null;
 };
 
 export default function FanArtGallery({ configured }: FanArtGalleryProps) {
@@ -69,16 +71,24 @@ export default function FanArtGallery({ configured }: FanArtGalleryProps) {
             loading="lazy"
             className="aspect-square w-full object-cover"
           />
-          <figcaption className="flex items-center justify-between p-4">
-            <span className="truncate text-sm font-medium">
-              {item.artist_name}
-            </span>
-            <span className="ml-2 shrink-0 text-xs uppercase tracking-wider text-dim">
-              {new Date(item.created_at).toLocaleDateString("en-IN", {
-                month: "short",
-                year: "numeric",
-              })}
-            </span>
+          <figcaption className="p-4">
+            <div className="flex items-center justify-between gap-2">
+              <span className="truncate text-sm font-medium">
+                {item.artist_name}
+              </span>
+              <span className="shrink-0 text-xs uppercase tracking-wider text-dim">
+                {new Date(item.created_at).toLocaleDateString("en-IN", {
+                  month: "short",
+                  year: "numeric",
+                })}
+              </span>
+            </div>
+            {item.dj_message && (
+              <p className="mt-2.5 rounded-xl border border-purple/30 bg-purple/10 p-3 text-xs italic leading-relaxed text-[#b3a1ff]">
+                <MessageSquare className="mr-1.5 inline h-3 w-3" aria-hidden />
+                DJSLAPS: {item.dj_message}
+              </p>
+            )}
           </figcaption>
         </figure>
       ))}

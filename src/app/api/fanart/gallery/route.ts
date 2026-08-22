@@ -12,12 +12,11 @@ export async function GET() {
   const supabase = createPublicClient(url, anonKey);
   const { data, error } = await supabase
     .from("fan_art_gallery")
-    .select("id, artist_name, storage_path, created_at")
+    .select("id, artist_name, storage_path, dj_message, created_at")
     .limit(100);
   if (error) {
     return NextResponse.json([], { status: 500 });
   }
-
   const withUrls = (data ?? []).map((row) => ({
     ...row,
     url: supabase.storage.from("fan-art").getPublicUrl(row.storage_path)

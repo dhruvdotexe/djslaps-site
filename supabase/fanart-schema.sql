@@ -5,6 +5,7 @@ create table if not exists fan_art (
   id bigint generated always as identity primary key,
   artist_name text not null default 'anonymous',
   storage_path text not null unique,
+  dj_message text,
   status text not null default 'pending' check (status in ('pending', 'approved', 'rejected')),
   created_at timestamptz not null default now()
 );
